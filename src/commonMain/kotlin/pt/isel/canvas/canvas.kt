@@ -1,5 +1,7 @@
 package pt.isel.canvas
 
+import kotlin.math.PI
+
 const val BLACK = 0x000000
 const val WHITE = 0xFFFFFF
 const val RED   = 0xFF0000
@@ -15,9 +17,10 @@ expect class Canvas(width: Int, height: Int, background: Int = WHITE) {
 
     fun erase()
     fun drawCircle(xCenter: Int, yCenter: Int, radius: Int, color: Int = BLACK, thickness: Int = 0)
+    fun drawArc(xCenter: Int, yCenter: Int, radius: Int, startAng: Int, endAng: Int = 360, color: Int = BLACK, thickness: Int = 0)
     fun drawRect(x: Int, y: Int, width: Int, height: Int, color: Int = BLACK, thickness: Int = 0)
     fun drawText(x: Int, y: Int, txt: String, color: Int = BLACK, fontSize: Int? = null)
-    fun drawLine(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int, color: Int = BLACK, thickness: Int = 3)
+    fun drawLine(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int, color: Int = BLACK, thickness: Int =3)
 
     fun onMouseDown(handler: (MouseEvent) -> Unit)
     fun onMouseMove(handler: (MouseEvent) -> Unit)

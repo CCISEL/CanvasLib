@@ -5,6 +5,8 @@ import kotlinx.browser.window
 import org.w3c.dom.*
 import kotlin.js.Date
 import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 private val all = mutableListOf<Canvas>()
 private var closing = false
@@ -44,16 +46,27 @@ actual class Canvas actual constructor(
         drawRect(0,0,width,height,background)
     }
     actual fun drawCircle(xCenter: Int, yCenter: Int, radius: Int, color: Int, thickness: Int) {
+        drawArc(xCenter,yCenter,radius,0,360,color,thickness)
+    }
+    actual fun drawArc(xCenter: Int, yCenter: Int, radius: Int, startAng: Int, endAng: Int, color: Int, thickness: Int) {
+        fun Int.toRadian() = 2*PI + (-2*this) * PI / 360
+        val eAng = startAng.toRadian()
+        val sAng = endAng.toRadian()
+        val x = xCenter.toDouble()
+        val y = yCenter.toDouble()
+        val r = radius.toDouble()
         if (thickness==0) {
             context.fillStyle = color.toRGB()
             context.beginPath()
-            context.arc(xCenter.toDouble(),yCenter.toDouble(),radius.toDouble(),0.0, 2* PI)
+            context.moveTo(x,y)
+            context.arc(x, y, r, sAng, eAng)
+            context.closePath()
             context.fill()
         } else {
             context.strokeStyle = color.toRGB()
             context.lineWidth = thickness.toDouble()
             context.beginPath()
-            context.arc(xCenter.toDouble(),yCenter.toDouble(),radius.toDouble(),0.0, 2* PI)
+            context.arc(x, y, r, sAng, eAng)
             context.stroke()
         }
     }

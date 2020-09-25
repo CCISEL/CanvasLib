@@ -47,11 +47,9 @@ actual class Canvas actual constructor(
         area.requestFocus()
         graph.setRenderingHints(
                 RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON))
-        graph.setRenderingHints( RenderingHints(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-            )
-        )
+        //graph.setRenderingHints(
+        //        RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON))
+        graph.setStroke( BasicStroke(25.0f,BasicStroke.CAP_BUTT,BasicStroke.JOIN_ROUND))
         graph.font = Font("verdana", Font.PLAIN, 32)
         erase()
     }
@@ -71,6 +69,20 @@ actual class Canvas actual constructor(
         else {
             graph.stroke = BasicStroke(thickness.toFloat())
             graph.drawOval(x, y, side, side)
+        }
+        area.repaint()
+    }
+    actual fun drawArc(xCenter: Int, yCenter: Int, radius: Int, startAng: Int, endAng: Int, color: Int, thickness: Int) {
+        graph.color= Color(color)
+        val x = xCenter-radius
+        val y = yCenter-radius
+        val side = radius*2
+        val arc = endAng - startAng
+        if (thickness==0)
+            graph.fillArc(x, y, side, side, startAng, arc)
+        else {
+            graph.stroke = BasicStroke(thickness.toFloat())
+            graph.drawArc(x, y, side, side, startAng, arc)
         }
         area.repaint()
     }
