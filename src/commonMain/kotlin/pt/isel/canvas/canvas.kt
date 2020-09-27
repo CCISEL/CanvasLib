@@ -1,14 +1,38 @@
 package pt.isel.canvas
 
-import kotlin.math.PI
+// Main color codes
+const val BLACK  = 0x000000
+const val WHITE  = 0xFFFFFF
+const val RED    = 0xFF0000
+const val GREEN  = 0x00FF00
+const val BLUE   = 0x0000FF
+const val YELLOW = 0xFFFF00
+const val CYAN   = 0x00FFFF
+const val MAGENTA= 0xFF00FF
 
-const val BLACK = 0x000000
-const val WHITE = 0xFFFFFF
-const val RED   = 0xFF0000
-const val GREEN = 0x00FF00
-const val BLUE  = 0x0000FF
+// Some char values for KeyEvent
+/**
+ * Value used in the KeyEvent char property when the key does not represent a Unicode symbol.
+ */
+const val UNDEFINED_CHAR = 0xFFFF.toChar()
+const val ESCAPE = 27.toChar()
 
+// Some key codes for KeyEvent
+const val ESCAPE_CODE = 27
+const val LEFT_CODE = 37
+const val UP_CODE = 38
+const val RIGHT_CODE = 39
+const val DOWN_CODE = 40
+
+/**
+ * Defines the [fx] function to be called when creating the window.
+ */
 expect fun onStart(fx: ()->Unit)
+
+/**
+ * Defines the [fx] function to be called when the window is closed.
+ */
+expect fun onFinish(fx: ()->Unit)
 
 expect class Canvas(width: Int, height: Int, background: Int = WHITE) {
     val width: Int
@@ -33,7 +57,7 @@ expect class Canvas(width: Int, height: Int, background: Int = WHITE) {
 
 fun erase(cv: Canvas) { cv.erase() }
 
-data class KeyEvent(val char: Char)
+data class KeyEvent(val char: Char, val code: Int, val text: String)
 
 data class MouseEvent(val x: Int, val y: Int, val down: Boolean = false)
 
@@ -42,6 +66,7 @@ expect class TimerCtrl {
 }
 
 expect fun playSound( sound: String )
+expect fun loadSounds(vararg names: String)
 
 //----------------------- DSL -----------------------
 

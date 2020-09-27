@@ -5,20 +5,25 @@ import kotlinx.browser.window
 import org.w3c.dom.*
 import kotlin.js.Date
 import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 private val all = mutableListOf<Canvas>()
 private var closing = false
 
 actual fun onStart(fx: () -> Unit) {
+    window.onclose = { closeAll() }
+    window.onload = { fx() }
+}
+
+private fun closeAll() {
+    closing = true
+    all.forEach { it.close() }
+    all.clear()
+}
+
+actual fun onFinish(fx: () -> Unit) {
     window.onclose = {
-        closing = true
-        all.forEach { it.close() }
-        all.clear()
-    }
-    window.onload = {
         fx()
+        closeAll()
     }
 }
 
@@ -115,9 +120,23 @@ actual class Canvas actual constructor(
     }
 
     actual fun onKeyPressed(handler: ((KeyEvent) -> Unit)?) {
-        window.onkeypress = if (handler==null) null
+        window.onkeydown = if (handler==null) null
         else { ke ->
-            handler(KeyEvent(ke.charCode.toChar()))
+            val c = when {
+                ke.key.length == 1 -> ke.key[0]
+                ke.keyCode == 27 -> ESCAPE
+                else -> UNDEFINED_CHAR
+            }
+            handler(KeyEvent(c, ke.keyCode, ke.key))
+            /*
+            println("charCode=|${ke.charCode.toChar()}|${ke.charCode}")
+            println("code=|${ke.code}|")
+            println("key=|${ke.key}|")
+            println("keyCode=|${ke.keyCode.toChar()}|${ke.keyCode.toInt()}")
+            println("which=|${ke.which.toChar()}|${ke.which.toInt()}")
+            println("isComposing=|${ke.isComposing}|")
+            println("repeat=|${ke.repeat}|")
+            */
         }
     }
 
@@ -156,10 +175,23 @@ actual class TimerCtrl(private val tms :MutableList<Int>, private val tm :Int) {
 
 private val sounds = mutableMapOf<String, Audio>()
 
+private fun String.toSoundName() = if (lastIndexOf('.')>0) this else "$this.wav"
+
+actual fun loadSounds(vararg names: String) {
+    for(s in names) {
+        val fileName = s.toSoundName()
+        sounds[fileName] = Audio(fileName)
+    }
+}
+
 actual fun playSound(sound: String) {
-    val fileName = if (sound.lastIndexOf('.')>0) sound else "$sound.wav"
+    val fileName = sound.toSoundName()
     val clip =
         if (sounds.contains(fileName)) sounds[fileName]
-        else Audio(fileName)
+        else {
+            val clp = Audio(fileName)
+            sounds[fileName] = clp
+            clp
+        }
     clip?.play()
 }

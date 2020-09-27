@@ -13,8 +13,9 @@ fun main() {
         cv.onKeyPressed { key ->
             when (key.char) {
                 ' ' -> cv.erase()
-                'Q','q' -> cv.close()
+                ESCAPE -> cv.close()
             }
+            println("Key: '${key.char}'=${key.char.toInt()} ${key.code} ${key.text}")
         }
         val tmCtrl = cv.onTimeProgress(1000) { tm ->
             cv.drawRect(0, 0, 30, 25, color = 0xAAAAAA)

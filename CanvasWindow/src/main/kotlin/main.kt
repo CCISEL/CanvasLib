@@ -13,12 +13,15 @@ fun main() {
         cv.onKeyPressed { key ->
             when (key.char) {
                 ' ' -> cv.erase()
-                'Q','q' -> cv.close()
+                ESCAPE -> cv.close()
             }
+            println("Key: '${key.char}'=${key.code} ${key.text}")
         }
         val tmCtrl = cv.onTimeProgress(1000) { tm ->
-            cv.drawRect(0, 0, 30, 25, color = 0xAAAAAA)
-            cv.drawText(5, 17, (tm / 1000).toString(), fontSize = 18)
+            //cv.drawRect(0, 0, 30, 25, color = 0xAAAAAA)
+            //cv.drawText(5, 17, (tm / 1000).toString(), fontSize = 18)
+            cv.drawRect(0, 0, 150, 150, color = 0xAAAAAA)
+            cv.drawText(5, 100, (tm / 1000).toString(), fontSize = 64)
         }
         cv.drawRect(50, 50, cv.width - 100, cv.height - 100, thickness = 10)
         cv.drawLine(0, 0, cv.width, cv.height)
