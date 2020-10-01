@@ -38,6 +38,7 @@ expect class Canvas(width: Int, height: Int, background: Int = WHITE) {
     val width: Int
     val height: Int
     val background: Int
+    val mouse: MouseEvent
 
     fun erase()
     fun drawCircle(xCenter: Int, yCenter: Int, radius: Int, color: Int = BLACK, thickness: Int = 0)

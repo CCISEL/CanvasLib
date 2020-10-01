@@ -149,8 +149,15 @@ actual constructor(
     actual fun onMouseDown(handler: (MouseEvent) -> Unit) {
         if (mouseDownHandler!=null) area.removeMouseListener(mouseDownHandler)
         mouseDownHandler = object : MouseAdapter() {
+            private fun call(m: MouseEvent) {
+                lastMouse = m
+                handler(m)
+            }
             override fun mousePressed(e: java.awt.event.MouseEvent) {
-                handler(MouseEvent(e.x, e.y, true))
+                call(MouseEvent(e.x,e.y,true))
+            }
+            override fun mouseReleased(e: java.awt.event.MouseEvent) {
+                lastMouse = MouseEvent(e.x,e.y,false)
             }
         }
         area.addMouseListener(mouseDownHandler)
@@ -160,12 +167,12 @@ actual constructor(
     actual fun onMouseMove(handler: (MouseEvent) -> Unit) {
         if (mouseMoveHandler!=null) area.removeMouseMotionListener(mouseMoveHandler)
         mouseMoveHandler = object : MouseMotionAdapter() {
-            override fun mouseMoved(e: java.awt.event.MouseEvent) {
-                handler(MouseEvent(e.x, e.y, false))
+            private fun call(m: MouseEvent) {
+                lastMouse = m
+                handler(m)
             }
-            override fun mouseDragged(e: java.awt.event.MouseEvent) {
-                handler(MouseEvent(e.x, e.y, true))
-            }
+            override fun mouseMoved(e: java.awt.event.MouseEvent) { call(MouseEvent(e.x,e.y,false)) }
+            override fun mouseDragged(e: java.awt.event.MouseEvent) { call(MouseEvent(e.x,e.y,true)) }
         }
         area.addMouseMotionListener(mouseMoveHandler)
     }
@@ -213,6 +220,15 @@ actual constructor(
             }
         }
     }
+
+    private var lastMouse: MouseEvent? = null
+    actual val mouse: MouseEvent
+        get() {
+            if (mouseDownHandler==null) onMouseDown { }
+            if (mouseMoveHandler==null) onMouseMove { }
+            val m = lastMouse ?: MouseEvent(0,0,false)
+            return m
+        }
 }
 
 actual class TimerCtrl(private val tms: MutableList<Timer>, private val tm: Timer) {

@@ -107,15 +107,30 @@ actual class Canvas actual constructor(
         context.stroke()
     }
 
+    private var lastMouse: MouseEvent? = null
+    actual val mouse: MouseEvent
+    get() {
+        if ( context.canvas.onmousedown == null ) onMouseDown {  }
+        if ( context.canvas.onmousemove == null ) onMouseMove {  }
+        context.canvas.onmouseup = {
+            lastMouse =  MouseEvent(it.offsetX.toInt(), it.offsetY.toInt(), false)
+            true
+        }
+        return lastMouse ?: MouseEvent(0,0,false)
+    }
     actual fun onMouseDown(handler: (MouseEvent) -> Unit) {
         context.canvas.onmousedown = {
-            handler(MouseEvent(it.offsetX.toInt(), it.offsetY.toInt(), true))
+            val m = MouseEvent(it.offsetX.toInt(), it.offsetY.toInt(), true)
+            lastMouse = m
+            handler(m)
         }
     }
 
     actual fun onMouseMove(handler: (MouseEvent) -> Unit) {
         context.canvas.onmousemove = {
-            handler(MouseEvent(it.offsetX.toInt(), it.offsetY.toInt(), it.buttons == 1.toShort()))
+            val m = MouseEvent(it.offsetX.toInt(), it.offsetY.toInt(), it.buttons == 1.toShort())
+            lastMouse = m
+            handler(m)
         }
     }
 
