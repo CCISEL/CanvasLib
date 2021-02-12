@@ -106,6 +106,10 @@ actual class Canvas actual constructor(
         context.lineTo(xTo.toDouble(),yTo.toDouble())
         context.stroke()
     }
+    actual fun drawImage(fileName :String, xLeft: Int, yTop: Int, width: Int, height: Int) {
+        //Do nothing in Browser
+    }
+
 
     private var lastMouse: MouseEvent? = null
     actual val mouse: MouseEvent

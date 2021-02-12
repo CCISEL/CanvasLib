@@ -4,6 +4,7 @@ import java.awt.*
 import java.awt.event.*
 import java.awt.image.BufferedImage
 import java.io.*
+import javax.imageio.ImageIO
 import javax.sound.sampled.*
 import javax.swing.JComponent
 import javax.swing.JFrame
@@ -144,6 +145,13 @@ actual constructor(
         graph.drawLine(xFrom, yFrom, xTo, yTo)
         area.repaint()
     }
+    actual fun drawImage(fileName :String, xLeft: Int, yTop: Int, width: Int, height: Int) {
+        val fname = if (fileName.indexOf('.')>0) fileName else "$fileName.png"
+        val img = if (images.contains(fname)) images[fname] else loadImage(fname)
+        if (width==0 || height==0) graph.drawImage(img,xLeft,yTop,null)
+        else graph.drawImage(img,xLeft,yTop,width,height,null)
+        area.repaint()
+    }
 
     private var mouseDownHandler : MouseListener? = null
     actual fun onMouseDown(handler: (MouseEvent) -> Unit) {
@@ -238,6 +246,8 @@ actual class TimerCtrl(private val tms: MutableList<Timer>, private val tm: Time
     }
 }
 
+private val images = mutableMapOf<String, Image?>()
+
 private val sounds = mutableMapOf<String, Clip?>()
 
 private fun String.toSoundName() = if (lastIndexOf('.')>0) this else "$this.wav"
@@ -258,22 +268,32 @@ actual fun playSound(sound: String) {
     }
 }
 
+private fun getInputStream(fileName:String) :InputStream {
+    val file = File(fileName)
+    return if (file.canRead()) file.inputStream() else Canvas::class.java.getResourceAsStream("/$fileName")
+        ?: throw FileNotFoundException("Cant open $fileName in working directory or in resources")
+}
+
+private fun loadImage(fileName:String) :Image {
+    try {
+        val img = ImageIO.read(getInputStream(fileName))
+        images[fileName] = img
+        return img
+    } catch (ex: Exception) {
+        images[fileName] = null
+        throw ex
+    }
+}
+
 private fun loadClip(fileName: String) :Clip {
-    val audio = AudioSystem.getAudioInputStream( BufferedInputStream(
-        try {
-            FileInputStream(fileName)
-        } catch (ex: FileNotFoundException) {
-            val input = Canvas::class.java.getResourceAsStream("/$fileName")
-            if (input == null) {
-                println("Cant open file $fileName in working directory or in resources.")
-                sounds[fileName] = null;
-                throw FileNotFoundException(fileName)
-             }
-            input
-        }
-    ))
-    return AudioSystem.getClip().apply {
-        open(audio)
-        sounds[fileName] = this
+    try {
+        val audio = AudioSystem.getAudioInputStream( BufferedInputStream( getInputStream(fileName) ) )
+        val clip = AudioSystem.getClip()
+        clip.open(audio)
+        sounds[fileName] = clip
+        return clip
+    } catch (ex: Exception) {
+        sounds[fileName] = null
+        throw ex
     }
 }

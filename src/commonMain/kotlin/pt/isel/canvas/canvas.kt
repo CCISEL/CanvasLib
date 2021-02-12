@@ -46,6 +46,7 @@ expect class Canvas(width: Int, height: Int, background: Int = WHITE) {
     fun drawRect(x: Int, y: Int, width: Int, height: Int, color: Int = BLACK, thickness: Int = 0)
     fun drawText(x: Int, y: Int, txt: String, color: Int = BLACK, fontSize: Int? = null)
     fun drawLine(xFrom: Int, yFrom: Int, xTo: Int, yTo: Int, color: Int = BLACK, thickness: Int =3)
+    fun drawImage(fileName :String, xLeft: Int, yTop: Int, width: Int=0, height: Int=0)
 
     fun onMouseDown(handler: (MouseEvent) -> Unit)
     fun onMouseMove(handler: (MouseEvent) -> Unit)

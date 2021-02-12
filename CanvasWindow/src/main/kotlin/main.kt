@@ -31,5 +31,6 @@ fun main() {
         cv.drawArc(cv.width/2,cv.height/2,100,0,90, 0x7777FF)
         cv.drawArc(cv.width/2,cv.height/2,50,90,270,0xFF7777,5)
         cv.onTime(10500) { tmCtrl.stop(); cv.erase() }
+        cv.drawImage("man",200,200,100,100)
     }
 }
